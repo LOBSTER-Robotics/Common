@@ -1,10 +1,10 @@
-from typing import Any, List, Union, Tuple
+from typing import List, Union, Tuple
 
 import numpy as np
 
-from Constants import *
-import Vec3
-from exceptions import InputDimensionError
+from lobster_common.Constants import *
+from lobster_common import Vec3
+from lobster_common.exceptions import InputDimensionError
 
 
 class Quaternion:
