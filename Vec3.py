@@ -35,29 +35,6 @@ class Vec3:
             raise TypeError(
                 f"A Vec3 needs to be instantiated by an array of floats, not an array of {self._data.dtype}")
 
-    @staticmethod
-    def fromENU(vector: Union['Vec3', List[float], Tuple[float, float, float], np.ndarray]):
-        """
-        Takes a vector in from the ENU coordinate system and converts it to the NED coordinate system.
-        :param vector: Vector in the ENU coordinate system.
-        :return: Vector in the NED coordinate system.
-        """
-        if isinstance(vector, Vec3):
-            # Negating the Y and Z axes
-            vector._data[1] = -vector._data[1]
-            vector._data[2] = -vector._data[2]
-            return vector
-        elif isinstance(vector, List) or isinstance(vector, np.ndarray):
-            # Negating the Y and Z axes
-            vector[1] = -vector[1]
-            vector[2] = -vector[2]
-            return Vec3(vector)
-        elif isinstance(vector, Tuple):
-            vector: Tuple[float, float, float] = (float(vector[0]), float(-vector[1]), float(-vector[2]))
-            return Vec3(vector)
-
-        raise TypeError(f"Can only create NED vector from Vec3 of array, not {type(vector)}")
-
     def asENU(self) -> np.ndarray:
         """
         Transforms the vector to the ENU coordinate system.
@@ -151,3 +128,26 @@ class Vec3:
             return (self._data == other._data).all()
 
         return False
+
+    @staticmethod
+    def fromENU(vector: Union['Vec3', List[float], Tuple[float, float, float], np.ndarray]):
+        """
+        Takes a vector in from the ENU coordinate system and converts it to the NED coordinate system.
+        :param vector: Vector in the ENU coordinate system.
+        :return: Vector in the NED coordinate system.
+        """
+        if isinstance(vector, Vec3):
+            # Negating the Y and Z axes
+            vector._data[1] = -vector._data[1]
+            vector._data[2] = -vector._data[2]
+            return vector
+        elif isinstance(vector, List) or isinstance(vector, np.ndarray):
+            # Negating the Y and Z axes
+            vector[1] = -vector[1]
+            vector[2] = -vector[2]
+            return Vec3(vector)
+        elif isinstance(vector, Tuple):
+            vector: Tuple[float, float, float] = (float(vector[0]), float(-vector[1]), float(-vector[2]))
+            return Vec3(vector)
+
+        raise TypeError(f"Can only create NED vector from Vec3 of array, not {type(vector)}")

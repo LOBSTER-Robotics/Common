@@ -47,31 +47,13 @@ class Quaternion:
         array[2] = -array[2]
         return array
 
-    # def get_rotation_matrix(self) -> np.ndarray:
-    #     from lobster_simulator.tools.PybulletAPI import PybulletAPI
-    #     return np.reshape(np.array(PybulletAPI.getMatrixFromQuaternion(self)), (3, 3))
-
-    def as_inverse_rotation_matrix(self):
-        return np.linalg.inv(self.as_rotation_matrix())
-
     def __str__(self):
         return f"Quaternion<{self._data}>"
 
-    def as_rotation_matrix(self):
-        """Convert input quaternion to 3x3 rotation matrix
-        Parameters
-        ----------
-        q: quaternion or array of quaternions
-            The quaternion(s) need not be normalized, but must all be nonzero
-        Returns
-        -------
-        rot: float array
-            Output shape is q.shape+(3,3).  This matrix should multiply (from
-            the left) a column vector to produce the rotated column vector.
-        Raises
-        ------
-        ZeroDivisionError
-            If any of the input quaternions have norm 0.0.
+    def get_rotation_matrix(self) -> np.ndarray:
+        """
+        Convert input quaternion to 3x3 rotation matrix
+        :return: 3x3 rotation matrix.
         """
         n = np.linalg.norm(self.numpy())
 
@@ -79,10 +61,13 @@ class Quaternion:
             raise ZeroDivisionError(f"Input to `as_rotation_matrix({self})` has zero norm")
 
         return np.array([
-            [1 - 2*(self.y**2 + self.z**2)/n,   2*(self.x*self.y - self.z*self.w)/n,      2*(self.x*self.z + self.y*self.w)/n],
-            [2*(self.x*self.y + self.z*self.w)/n,     1 - 2*(self.x**2 + self.z**2)/n,    2*(self.y*self.z - self.x*self.w)/n],
-            [2*(self.x*self.z - self.y*self.w)/n,     2*(self.y*self.z + self.x*self.w)/n,      1 - 2*(self.x**2 + self.y**2)/n]
+            [1 - 2*(self.y**2 + self.z**2)/n,     2*(self.x*self.y - self.z*self.w)/n, 2*(self.x*self.z + self.y*self.w)/n],
+            [2*(self.x*self.y + self.z*self.w)/n, 1 - 2*(self.x**2 + self.z**2)/n,     2*(self.y*self.z - self.x*self.w)/n],
+            [2*(self.x*self.z - self.y*self.w)/n, 2*(self.y*self.z + self.x*self.w)/n, 1 - 2*(self.x**2 + self.y**2)/n]
         ])
+
+    def get_inverse_rotation_matrix(self):
+        return np.linalg.inv(self.get_rotation_matrix())
 
     @staticmethod
     def from_euler(euler_angles: Vec3):
@@ -98,19 +83,17 @@ class Quaternion:
         sin = np.sin
 
         # Compute the actual values of the quaternion components
-        # R[X] = sin(beta / 2) * cos((alpha - gamma) / 2)  # x quaternion components
+        # TODO this seems to be a slightly more efficient way to compute this, but produces different results, maybe in
+        #  the future we can look at this.
+        # R[X] = sin(alpha / 2) * cos((alpha - gamma) / 2)  # x quaternion components
         # R[Y] = sin(beta / 2) * sin((alpha - gamma) / 2)  # y quaternion components
         # R[Z] = cos(beta / 2) * sin((alpha + gamma) / 2)  # z quaternion components
         # R[W] = cos(beta / 2) * cos((alpha + gamma) / 2)  # scalar quaternion components
 
-        R[W] = cos(alpha / 2) * cos(beta / 2) * cos(gamma / 2) + sin(alpha/2) * sin(beta/2)*sin(gamma/2)
         R[X] = sin(alpha / 2) * cos(beta / 2) * cos(gamma / 2) - cos(alpha/2) * sin(beta/2)*sin(gamma/2)
         R[Y] = cos(alpha / 2) * sin(beta / 2) * cos(gamma / 2) + sin(alpha/2) * cos(beta/2)*sin(gamma/2)
         R[Z] = cos(alpha / 2) * cos(beta / 2) * sin(gamma / 2) - sin(alpha/2) * sin(beta/2)*cos(gamma/2)
-
-
-
-        print(np.linalg.norm(R))
+        R[W] = cos(alpha / 2) * cos(beta / 2) * cos(gamma / 2) + sin(alpha/2) * sin(beta/2)*sin(gamma/2)
 
         return Quaternion(R / np.linalg.norm(R))
 
