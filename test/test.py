@@ -1,5 +1,7 @@
-import pytest
+import unittest
 
 
-def test():
-    print("test")
+class Test(unittest.TestCase):
+
+    def test(self):
+        print("test")
