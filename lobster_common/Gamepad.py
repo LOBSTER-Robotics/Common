@@ -1,7 +1,7 @@
 import threading
-from time import sleep
 
 import inputs
+
 
 class Gamepad:
 
@@ -54,7 +54,6 @@ class Gamepad:
             return 0
         else:
             return (input - sign*0.1) * (10/9)
-
 
     @property
     def x(self):
