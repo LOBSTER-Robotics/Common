@@ -24,9 +24,9 @@ class Vec3:
         assert isinstance(data, np.ndarray) or isinstance(data, List) or isinstance(data, Tuple) or isinstance(data, Vec3)
 
         if isinstance(data, Vec3):
-            self._data: np.ndarray = np.asarray(data.numpy().copy())
-        else:
-            self._data: np.ndarray = np.asarray(data)
+            data = data.numpy().copy()
+            
+        self._data: np.ndarray = np.asarray(data)
 
         assert self._data.shape
         if self._data.shape[0] != 3:
