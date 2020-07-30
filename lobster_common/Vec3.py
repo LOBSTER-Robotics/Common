@@ -41,10 +41,7 @@ class Vec3:
         :return: Vector in the ENU coordinate system.
         """
         # Swapping the Y and Z axes
-        array = self._data.copy()
-        array[1] = -array[1]
-        array[2] = -array[2]
-        return array
+        return np.array([self._data[0],-self._data[1],-self._data[2]])
 
     def numpy(self) -> np.ndarray:
         return self._data
