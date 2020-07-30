@@ -14,5 +14,5 @@ class ArgumentLengthError(Exception):
 
 class InputDimensionError(Exception):
     """
-    Raised when the size of the input dimension is correct
+    Raised when the size of the input dimension is incorrect
     """
