@@ -6,6 +6,7 @@ from typing import Union, List, Tuple
 import numpy as np
 
 from lobster_common.exceptions import InputDimensionError
+from lobster_common.quaternion import Quaternion
 
 
 class Vec3:
