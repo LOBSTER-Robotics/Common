@@ -2,9 +2,9 @@ from typing import List, Union, Tuple
 
 import numpy as np
 
-from lobster_common.Constants import *
-from lobster_common import Vec3
+from lobster_common.constants import *
 from lobster_common.exceptions import InputDimensionError
+from lobster_common.vec3 import Vec3
 
 
 class Quaternion:

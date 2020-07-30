@@ -5,8 +5,6 @@ from typing import Union, List, Tuple
 
 import numpy as np
 
-from lobster_common import Quaternion
-
 from lobster_common.exceptions import InputDimensionError
 
 

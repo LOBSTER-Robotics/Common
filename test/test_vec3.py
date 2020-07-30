@@ -4,8 +4,8 @@ import unittest
 
 import numpy as np
 
-from lobster_common.Quaternion import Quaternion
-from lobster_common.Vec3 import Vec3
+from lobster_common.quaternion import Quaternion
+from lobster_common.vec3 import Vec3
 
 
 class Vec3Test(unittest.TestCase):
