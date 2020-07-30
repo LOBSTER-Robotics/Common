@@ -130,7 +130,7 @@ class Vec3:
         return False
 
     @staticmethod
-    def fromENU(vector: Union['Vec3', List[float], Tuple[float, float, float], np.ndarray]):
+    def fromENU(vector: Union['Vec3', List[float], Tuple[float, float, float], np.ndarray]) -> Vec3:
         """
         Takes a vector in from the ENU coordinate system and converts it to the NED coordinate system.
         :param vector: Vector in the ENU coordinate system.
