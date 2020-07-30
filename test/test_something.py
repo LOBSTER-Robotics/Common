@@ -1,7 +1,7 @@
 import unittest
 
 
-class Test(unittest.TestCase):
+class TestSomething(unittest.TestCase):
 
     def test(self):
         print("test")
