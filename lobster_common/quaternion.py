@@ -4,9 +4,9 @@ from typing import List, Union, Tuple
 
 import numpy as np
 
+from lobster_common import vec3
 from lobster_common.constants import *
 from lobster_common.exceptions import InputDimensionError
-from lobster_common import vec3
 
 
 class Quaternion:
@@ -17,6 +17,9 @@ class Quaternion:
         :param data: Array with length 4 in the form [x, y, z, w]
         """
         assert isinstance(data, np.ndarray) or isinstance(data, List) or isinstance(data, Tuple)
+
+        if isinstance(data, Quaternion):
+            data = data.numpy().copy()
 
         self._data: np.ndarray = np.asarray(data)
 
@@ -106,23 +109,5 @@ class Quaternion:
         :param quaternion: Quaternion or array that represents a quaternion
         :return: Quaternion in the NED coordinate system
         """
-
         # Conversion follows https://stackoverflow.com/a/18818267, it needs to be checked if this is correct
-        if isinstance(quaternion, Quaternion):
-            # Swapping the Y and Z axes
-            quaternion._data[1] = -quaternion._data[1]
-            quaternion._data[2] = -quaternion._data[2]
-            return quaternion
-        elif isinstance(quaternion, List) or isinstance(quaternion, np.ndarray):
-            # Swapping the Y and Z axes
-            quaternion[1] = -quaternion[1]
-            quaternion[2] = -quaternion[2]
-            return Quaternion(quaternion)
-        elif isinstance(quaternion, Tuple):
-            quaternion: Tuple[float, float, float, float] = (float(quaternion[0]),
-                                                             float(-quaternion[1]),
-                                                             float(-quaternion[2]),
-                                                             float(quaternion[3]))
-            return Quaternion(quaternion)
-
-        raise TypeError(f"Can only create NED quaternion from quaternion of array, not {type(quaternion)}")
+        return Quaternion([quaternion[X], -quaternion[Y], -quaternion[Z], quaternion[W]])

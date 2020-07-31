@@ -5,6 +5,7 @@ from typing import Union, List, Tuple
 
 import numpy as np
 
+from lobster_common.constants import *
 from lobster_common.exceptions import InputDimensionError
 from lobster_common import quaternion
 
@@ -132,18 +133,4 @@ class Vec3:
         :param vector: Vector in the ENU coordinate system.
         :return: Vector in the NED coordinate system.
         """
-        if isinstance(vector, Vec3):
-            # Negating the Y and Z axes
-            vector._data[1] = -vector._data[1]
-            vector._data[2] = -vector._data[2]
-            return vector
-        elif isinstance(vector, List) or isinstance(vector, np.ndarray):
-            # Negating the Y and Z axes
-            vector[1] = -vector[1]
-            vector[2] = -vector[2]
-            return Vec3(vector)
-        elif isinstance(vector, Tuple):
-            vector: Tuple[float, float, float] = (float(vector[0]), float(-vector[1]), float(-vector[2]))
-            return Vec3(vector)
-
-        raise TypeError(f"Can only create NED vector from Vec3 of array, not {type(vector)}")
+        return Vec3([vector[X], -vector[Y], -vector[Z]])
