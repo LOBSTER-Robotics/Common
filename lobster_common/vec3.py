@@ -72,8 +72,7 @@ class Vec3:
 
     def __radd__(self, other):
         if isinstance(other, np.ndarray):
-            new_vec = Vec3(other + self._data)
-            return new_vec
+            return Vec3(other + self._data)
         elif isinstance(other, float):
             return Vec3(other + self._data)
 
