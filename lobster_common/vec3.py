@@ -6,7 +6,7 @@ from typing import Union, List, Tuple
 import numpy as np
 
 from lobster_common.exceptions import InputDimensionError
-from lobster_common.quaternion import Quaternion
+from lobster_common import quaternion
 
 
 class Vec3:
@@ -45,7 +45,7 @@ class Vec3:
     def numpy(self) -> np.ndarray:
         return self._data
 
-    def rotate(self, quaternion: Quaternion) -> 'Vec3':
+    def rotate(self, quaternion: quaternion.Quaternion) -> 'Vec3':
         """
         Rotates the vector by the given quaternion.
         :param quaternion: Rotation
@@ -53,7 +53,7 @@ class Vec3:
         """
         return Vec3(quaternion.get_rotation_matrix().dot(self._data))
 
-    def rotate_inverse(self, quaternion: Quaternion) -> 'Vec3':
+    def rotate_inverse(self, quaternion: quaternion.Quaternion) -> 'Vec3':
         """
         Inversely rotates the vector by the given quaternion.
         :param quaternion: Rotation

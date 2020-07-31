@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from typing import List, Union, Tuple
 
 import numpy as np
 
 from lobster_common.constants import *
 from lobster_common.exceptions import InputDimensionError
-from lobster_common.vec3 import Vec3
+from lobster_common import vec3
 
 
 class Quaternion:
@@ -70,7 +72,7 @@ class Quaternion:
         return np.linalg.inv(self.get_rotation_matrix())
 
     @staticmethod
-    def from_euler(euler_angles: Vec3):
+    def from_euler(euler_angles: vec3.Vec3):
         # Figure out the input angles from either type of input
         alpha = euler_angles[X]
         beta = euler_angles[Y]
