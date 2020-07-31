@@ -66,15 +66,13 @@ class Vec3:
         if isinstance(other, Vec3):
             return Vec3(self._data + other._data)
         elif isinstance(other, np.ndarray):
-            to_return = other + self._data
-            return Vec3(to_return)
+            return Vec3(other + self._data)
 
         raise TypeError(f"A {type(other)} cannot be added to a Vec3")
 
     def __radd__(self, other):
         if isinstance(other, np.ndarray):
-            new_vec = Vec3(other + self._data)
-            return new_vec
+            return Vec3(other + self._data)
         elif isinstance(other, float):
             return Vec3(other + self._data)
 
