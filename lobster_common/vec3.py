@@ -87,7 +87,10 @@ class Vec3:
         raise TypeError(f"A {type(other)} cannot be subtracted from a Vec3")
 
     def __rsub__(self, other):
-        return other - self._data
+        if isinstance(other, Vec3):
+            return Vec3(other._data - self._data)
+
+        raise TypeError(f"A {type(other)} cannot be subtracted from a Vec3")
 
     def __mul__(self, other):
         if isinstance(other, float) or isinstance(other, int):
