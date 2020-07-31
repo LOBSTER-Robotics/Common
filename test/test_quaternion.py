@@ -23,4 +23,4 @@ class QuaternionTest(unittest.TestCase):
             ratios = calculated_quaternion.numpy() / q.numpy()
 
             for ratio in ratios:
-                self.assertEqual(1.0, ratio)
+                self.assertAlmostEqual(1.0, ratio, places=6)
