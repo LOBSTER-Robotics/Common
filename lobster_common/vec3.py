@@ -35,13 +35,7 @@ class Vec3:
             raise TypeError(
                 f"A Vec3 needs to be instantiated by an array of floats, not an array of {self._data.dtype}")
 
-    def asENU(self) -> np.ndarray:
-        """
-        Transforms the vector to the ENU coordinate system.
-        :return: Vector in the ENU coordinate system.
-        """
-        # Swapping the Y and Z axes
-        return np.array([self._data[0],-self._data[1],-self._data[2]])
+
 
     def numpy(self) -> np.ndarray:
         return self._data
@@ -126,6 +120,14 @@ class Vec3:
             return (self._data == other._data).all()
 
         return False
+
+    def asENU(self) -> np.ndarray:
+        """
+        Transforms the vector to the ENU coordinate system.
+        :return: Vector in the ENU coordinate system.
+        """
+        # Negating the Y and Z axes
+        return np.array([self._data[0], -self._data[1], -self._data[2]])
 
     @staticmethod
     def fromENU(vector: Union['Vec3', List[float], Tuple[float, float, float], np.ndarray]) -> Vec3:

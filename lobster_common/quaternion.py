@@ -45,12 +45,8 @@ class Quaternion:
     def w(self):
         return self._data[W]
 
-    def asENU(self) -> np.ndarray:
-        # Swapping the Y and Z axes
-        array = self._data.copy()
-        array[1] = -array[1]
-        array[2] = -array[2]
-        return array
+    def __getitem__(self, key):
+        return self._data[key]
 
     def __str__(self):
         return f"Quaternion<{self._data}>"
@@ -102,6 +98,15 @@ class Quaternion:
 
         return Quaternion(R / np.linalg.norm(R))
 
+    def asENU(self) -> np.ndarray:
+        # Conversion follows https://stackoverflow.com/a/18818267
+
+        # Negating the Y and Z axes
+        array = self._data.copy()
+        array[1] = -array[1]
+        array[2] = -array[2]
+        return array
+
     @staticmethod
     def fromENU(quaternion: Union[List[float], Tuple[float, float, float, float], np.ndarray]) -> 'Quaternion':
         """
@@ -109,5 +114,5 @@ class Quaternion:
         :param quaternion: Quaternion or array that represents a quaternion
         :return: Quaternion in the NED coordinate system
         """
-        # Conversion follows https://stackoverflow.com/a/18818267, it needs to be checked if this is correct
+        # Conversion follows https://stackoverflow.com/a/18818267
         return Quaternion([quaternion[X], -quaternion[Y], -quaternion[Z], quaternion[W]])
