@@ -4,11 +4,10 @@ from typing import List, Union, Tuple
 
 import numpy as np
 
-from lobster_common.third_party import transformations as trans
-
 from lobster_common import vec3
 from lobster_common.constants import *
 from lobster_common.exceptions import InputDimensionError
+from lobster_common.third_party import transformations as trans
 from lobster_common.vec3 import Vec3
 
 
@@ -36,33 +35,17 @@ class Quaternion:
     def x(self) -> float:
         return self._data[X]
 
-    @x.setter
-    def x(self, value: float) -> None:
-        self._data[X] = value
-
     @property
     def y(self) -> float:
         return self._data[Y]
-
-    @y.setter
-    def y(self, value: float) -> None:
-        self._data[Y] = value
 
     @property
     def z(self):
         return self._data[Z]
 
-    @z.setter
-    def z(self, value: float) -> None:
-        self._data[Z] = value
-
     @property
     def w(self):
         return self._data[W]
-
-    @w.setter
-    def w(self, value: float) -> None:
-        self._data[W] = value
 
     def __getitem__(self, key):
         return self._data[key]
