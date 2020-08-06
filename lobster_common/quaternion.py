@@ -4,9 +4,12 @@ from typing import List, Union, Tuple
 
 import numpy as np
 
+from lobster_common.third_party import transformations as trans
+
 from lobster_common import vec3
 from lobster_common.constants import *
 from lobster_common.exceptions import InputDimensionError
+from lobster_common.vec3 import Vec3
 
 
 class Quaternion:
@@ -26,30 +29,49 @@ class Quaternion:
         if self._data.shape[0] != 4:
             raise InputDimensionError("A Quaternion needs an input array of length 4")
 
-    def numpy(self):
+    def numpy(self) -> np.ndarray:
         return self._data
 
     @property
-    def x(self):
+    def x(self) -> float:
         return self._data[X]
 
+    @x.setter
+    def x(self, value: float) -> None:
+        self._data[X] = value
+
     @property
-    def y(self):
+    def y(self) -> float:
         return self._data[Y]
+
+    @y.setter
+    def y(self, value: float) -> None:
+        self._data[Y] = value
 
     @property
     def z(self):
         return self._data[Z]
 
+    @z.setter
+    def z(self, value: float) -> None:
+        self._data[Z] = value
+
     @property
     def w(self):
         return self._data[W]
+
+    @w.setter
+    def w(self, value: float) -> None:
+        self._data[W] = value
 
     def __getitem__(self, key):
         return self._data[key]
 
     def __str__(self):
-        return f"Quaternion<{self._data}>"
+        return f"Quaternion<{self.x},{self.y},{self.z},{self.w}"
+
+    def __mul__(self, other):
+        return Quaternion(trans.quaternion_multiply(self, other))
 
     def get_rotation_matrix(self) -> np.ndarray:
         """
@@ -69,6 +91,12 @@ class Quaternion:
 
     def get_inverse_rotation_matrix(self):
         return np.linalg.inv(self.get_rotation_matrix())
+
+    def to_euler(self) -> Vec3:
+        """
+        Transform to euler [x,y,z]
+        """
+        return Vec3(trans.euler_from_quaternion(self))
 
     @staticmethod
     def from_euler(euler_angles: vec3.Vec3):
@@ -97,6 +125,21 @@ class Quaternion:
         R[W] = cos(alpha / 2) * cos(beta / 2) * cos(gamma / 2) + sin(alpha/2) * sin(beta/2)*sin(gamma/2)
 
         return Quaternion(R / np.linalg.norm(R))
+
+    def conjugate(self) -> 'Quaternion':
+        """
+        Conjugate quaternion.
+        """
+        return Quaternion(trans.quaternion_conjugate(self))
+
+    def difference(self, other: 'Quaternion') -> Quaternion:
+        """
+        Get the difference of rotation between two quaternions
+        :Quaternion other: Other rotation to compare the difference to.
+        :returns: Difference as a quaternion
+        """
+        # return trans.quaternion_multiply(trans.quaternion_conjugate(self), goal_quat)
+        return self.conjugate() * other
 
     def asENU(self) -> np.ndarray:
         # Conversion follows https://stackoverflow.com/a/18818267
