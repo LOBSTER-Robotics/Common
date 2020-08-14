@@ -35,10 +35,20 @@ class Vec3:
             raise TypeError(
                 f"A Vec3 needs to be instantiated by an array of floats, not an array of {self._data.dtype}")
 
-
-
     def numpy(self) -> np.ndarray:
         return self._data
+
+    @property
+    def x(self) -> float:
+        return self._data[X]
+
+    @property
+    def y(self) -> float:
+        return self._data[Y]
+
+    @property
+    def z(self):
+        return self._data[Z]
 
     def rotate(self, quaternion: quaternion.Quaternion) -> 'Vec3':
         """
