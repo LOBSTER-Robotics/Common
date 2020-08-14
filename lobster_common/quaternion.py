@@ -8,7 +8,6 @@ from lobster_common import vec3
 from lobster_common.constants import *
 from lobster_common.exceptions import InputDimensionError
 from lobster_common.third_party import transformations as trans
-from lobster_common.vec3 import Vec3
 
 
 class Quaternion:
@@ -75,11 +74,11 @@ class Quaternion:
     def get_inverse_rotation_matrix(self):
         return np.linalg.inv(self.get_rotation_matrix())
 
-    def to_euler(self) -> Vec3:
+    def to_euler(self) -> vec3.Vec3:
         """
         Transform to euler [x,y,z]
         """
-        return Vec3(trans.euler_from_quaternion(self))
+        return vec3.Vec3(trans.euler_from_quaternion(self))
 
     @staticmethod
     def from_euler(euler_angles: vec3.Vec3):
