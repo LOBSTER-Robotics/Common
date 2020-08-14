@@ -39,11 +39,11 @@ class Quaternion:
         return self._data[Y]
 
     @property
-    def z(self):
+    def z(self) -> float:
         return self._data[Z]
 
     @property
-    def w(self):
+    def w(self) -> float:
         return self._data[W]
 
     def __getitem__(self, key):

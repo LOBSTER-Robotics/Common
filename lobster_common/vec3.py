@@ -47,7 +47,7 @@ class Vec3:
         return self._data[Y]
 
     @property
-    def z(self):
+    def z(self) -> float:
         return self._data[Z]
 
     def rotate(self, quaternion: quaternion.Quaternion) -> 'Vec3':
