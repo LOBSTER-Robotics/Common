@@ -1,5 +1,3 @@
-from lobster_common.vec3 import Vec3
-
 X = 0
 Y = 1
 Z = 2
@@ -20,4 +18,4 @@ DENSITY_FRESHWATER = 997
 DENSITY_SALTWATER = 1029
 
 # Magnetic field direction based on NED frame
-MAGNETIC_FIELD = Vec3([1, 0, 0])
+MAGNETIC_FIELD = (1, 0, 0)
