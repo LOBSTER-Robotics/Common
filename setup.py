@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='lobster_common',
-    version='0.0.4',
+    version='0.0.5',
     description='Shared code between Lobster control code and Lobster Simulator',
     url='https://github.com/LOBSTER-Robotics/Common',
     author='Joris Quist',
