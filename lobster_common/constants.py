@@ -1,3 +1,5 @@
+from lobster_common.vec3 import Vec3
+
 X = 0
 Y = 1
 Z = 2
@@ -16,3 +18,5 @@ STANDARD_ATMOSPHERE_PASCAL = 101325
 # kg/m^3
 DENSITY_FRESHWATER = 997
 DENSITY_SALTWATER = 1029
+
+MAGNETIC_FIELD = Vec3([0, 1, 0])
