@@ -66,9 +66,12 @@ class Quaternion:
             raise ZeroDivisionError(f"Input to `as_rotation_matrix({self})` has zero norm")
 
         return np.array([
-            [1 - 2*(self.y**2 + self.z**2)/n,     2*(self.x*self.y - self.z*self.w)/n, 2*(self.x*self.z + self.y*self.w)/n],
-            [2*(self.x*self.y + self.z*self.w)/n, 1 - 2*(self.x**2 + self.z**2)/n,     2*(self.y*self.z - self.x*self.w)/n],
-            [2*(self.x*self.z - self.y*self.w)/n, 2*(self.y*self.z + self.x*self.w)/n, 1 - 2*(self.x**2 + self.y**2)/n]
+            [1 - 2 * (self.y ** 2 + self.z ** 2) / n, 2 * (self.x * self.y - self.z * self.w) / n,
+             2 * (self.x * self.z + self.y * self.w) / n],
+            [2 * (self.x * self.y + self.z * self.w) / n, 1 - 2 * (self.x ** 2 + self.z ** 2) / n,
+             2 * (self.y * self.z - self.x * self.w) / n],
+            [2 * (self.x * self.z - self.y * self.w) / n, 2 * (self.y * self.z + self.x * self.w) / n,
+             1 - 2 * (self.x ** 2 + self.y ** 2) / n]
         ])
 
     def get_inverse_rotation_matrix(self):
@@ -101,10 +104,10 @@ class Quaternion:
         # R[Z] = cos(beta / 2) * sin((alpha + gamma) / 2)  # z quaternion components
         # R[W] = cos(beta / 2) * cos((alpha + gamma) / 2)  # scalar quaternion components
 
-        R[X] = sin(alpha / 2) * cos(beta / 2) * cos(gamma / 2) - cos(alpha/2) * sin(beta/2)*sin(gamma/2)
-        R[Y] = cos(alpha / 2) * sin(beta / 2) * cos(gamma / 2) + sin(alpha/2) * cos(beta/2)*sin(gamma/2)
-        R[Z] = cos(alpha / 2) * cos(beta / 2) * sin(gamma / 2) - sin(alpha/2) * sin(beta/2)*cos(gamma/2)
-        R[W] = cos(alpha / 2) * cos(beta / 2) * cos(gamma / 2) + sin(alpha/2) * sin(beta/2)*sin(gamma/2)
+        R[X] = sin(alpha / 2) * cos(beta / 2) * cos(gamma / 2) - cos(alpha / 2) * sin(beta / 2) * sin(gamma / 2)
+        R[Y] = cos(alpha / 2) * sin(beta / 2) * cos(gamma / 2) + sin(alpha / 2) * cos(beta / 2) * sin(gamma / 2)
+        R[Z] = cos(alpha / 2) * cos(beta / 2) * sin(gamma / 2) - sin(alpha / 2) * sin(beta / 2) * cos(gamma / 2)
+        R[W] = cos(alpha / 2) * cos(beta / 2) * cos(gamma / 2) + sin(alpha / 2) * sin(beta / 2) * sin(gamma / 2)
 
         return Quaternion(R / np.linalg.norm(R))
 
@@ -125,12 +128,8 @@ class Quaternion:
 
     def asENU(self) -> np.ndarray:
         # Conversion follows https://stackoverflow.com/a/18818267
-
-        # Negating the Y and Z axes
-        array = self._data.copy()
-        array[1] = -array[1]
-        array[2] = -array[2]
-        return array
+        # Swapping X and Y and negating Z
+        return np.array([self._data[Y], self._data[X], -self._data[Z], self._data[W]])
 
     @staticmethod
     def fromENU(quaternion: Union[List[float], Tuple[float, float, float, float], np.ndarray]) -> 'Quaternion':
@@ -140,4 +139,5 @@ class Quaternion:
         :return: Quaternion in the NED coordinate system
         """
         # Conversion follows https://stackoverflow.com/a/18818267
-        return Quaternion([quaternion[X], -quaternion[Y], -quaternion[Z], quaternion[W]])
+        # Swapping X and Y and negating Z
+        return Quaternion([quaternion[Y], quaternion[X], -quaternion[Z], quaternion[W]])
