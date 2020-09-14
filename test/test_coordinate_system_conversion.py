@@ -25,7 +25,7 @@ class CoordinateSystemConversionTest(unittest.TestCase):
             # transform the original vector to the NED coordinate system
             vec_NED = Vec3.fromENU(vec)
 
-            # transform the original quaternino to the NED coordinate system
+            # transform the original quaternion to the NED coordinate system
             q_NED = Quaternion.fromENU(q)
 
             # Rotate the converted vector by the converted rotation
@@ -34,4 +34,4 @@ class CoordinateSystemConversionTest(unittest.TestCase):
             # transform the rotated vector to the NED coordinate system
             rotated_vec_NED_transformed = Vec3.fromENU(rotated_vec)
 
-            self.assertEqual(rotated_vec_NED, rotated_vec_NED_transformed)
+            np.testing.assert_allclose(rotated_vec_NED.numpy(), rotated_vec_NED_transformed.numpy())

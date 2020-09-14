@@ -126,11 +126,7 @@ class Quaternion:
     def asENU(self) -> np.ndarray:
         # Conversion follows https://stackoverflow.com/a/18818267
 
-        # Negating the Y and Z axes
-        array = self._data.copy()
-        array[1] = -array[1]
-        array[2] = -array[2]
-        return array
+        return np.array([self._data[Y],self._data[X],-self._data[Z],self._data[W]])
 
     @staticmethod
     def fromENU(quaternion: Union[List[float], Tuple[float, float, float, float], np.ndarray]) -> 'Quaternion':
@@ -140,4 +136,4 @@ class Quaternion:
         :return: Quaternion in the NED coordinate system
         """
         # Conversion follows https://stackoverflow.com/a/18818267
-        return Quaternion([quaternion[X], -quaternion[Y], -quaternion[Z], quaternion[W]])
+        return Quaternion([quaternion[Y], quaternion[X], -quaternion[Z], quaternion[W]])

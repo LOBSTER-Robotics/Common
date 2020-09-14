@@ -136,8 +136,8 @@ class Vec3:
         Transforms the vector to the ENU coordinate system.
         :return: Vector in the ENU coordinate system.
         """
-        # Negating the Y and Z axes
-        return np.array([self._data[0], -self._data[1], -self._data[2]])
+        # Swapping X and Y and negating Z
+        return np.array([self._data[Y], self._data[X], -self._data[Z]])
 
     @staticmethod
     def fromENU(vector: Union['Vec3', List[float], Tuple[float, float, float], np.ndarray]) -> Vec3:
@@ -146,4 +146,5 @@ class Vec3:
         :param vector: Vector in the ENU coordinate system.
         :return: Vector in the NED coordinate system.
         """
-        return Vec3([vector[X], -vector[Y], -vector[Z]])
+        # Swapping X and Y and negating Z
+        return Vec3([vector[Y], vector[X], -vector[Z]])
