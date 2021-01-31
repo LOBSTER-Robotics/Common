@@ -52,6 +52,9 @@ class Quaternion:
     def __str__(self):
         return f"Quaternion<x:{self.x},y:{self.y},z:{self.z},w:{self.w}"
 
+    def __format__(self, format_spec):
+        return str(self)
+
     def __mul__(self, other):
         return Quaternion(trans.quaternion_multiply(self, other))
 
