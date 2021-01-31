@@ -60,7 +60,7 @@ class Time(int):
     def __str__(self) -> str:
         return f"Time<{self/NANOSECONDS_PER_SECOND:.9f} seconds>"
 
-    def __format__(self, format_spec):
+    def __repr__(self):
         return str(self)
 
 

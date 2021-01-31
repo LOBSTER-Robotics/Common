@@ -125,7 +125,7 @@ class Vec3:
     def __str__(self):
         return f"Vec3<{self[0]:.4f}, {self[1]:.4f}, {self[2]:.4f}>"
 
-    def __format__(self, format_spec):
+    def __repr__(self):
         return str(self)
 
     def __eq__(self, other):
