@@ -24,5 +24,5 @@ class Vec3Test(unittest.TestCase):
             numpy_method_inv = vec3.Vec3(rotation.get_inverse_rotation_matrix().dot(vec.numpy()))
             rotate_method_inv = vec.rotate_inverse(rotation)
 
-            self.assertTrue(np.linalg.norm((numpy_method - rotate_method).numpy()) < 0.00000000001)
-            self.assertTrue(np.linalg.norm((numpy_method_inv - rotate_method_inv).numpy()) < 0.00000000001)
+            self.assertTrue(np.allclose(numpy_method.numpy(), rotate_method.numpy()))
+            self.assertTrue(np.allclose(numpy_method_inv.numpy(), rotate_method_inv.numpy()))
