@@ -53,18 +53,20 @@ class Vec3:
     def rotate(self, quaternion: quaternion.Quaternion) -> 'Vec3':
         """
         Rotates the vector by the given quaternion.
+        Use this method to rotate a vector from the body frame to the world frame
         :param quaternion: Rotation
         :return: Rotated vector
         """
-        return Vec3(quaternion.get_rotation_matrix().dot(self._data))
+        return Vec3((quaternion * [self.x, self.y, self.z, 0.0] * quaternion.conjugate()).numpy()[0:3])
 
     def rotate_inverse(self, quaternion: quaternion.Quaternion) -> 'Vec3':
         """
         Inversely rotates the vector by the given quaternion.
+        Use this method to rotate a vector from the world frame to the body frame
         :param quaternion: Rotation
         :return: Rotated vector
         """
-        return Vec3(quaternion.get_inverse_rotation_matrix().dot(self._data))
+        return Vec3((quaternion.conjugate() * [self.x, self.y, self.z, 0.0] * quaternion).numpy()[0:3])
 
     def __add__(self, other):
         if isinstance(other, Vec3):
