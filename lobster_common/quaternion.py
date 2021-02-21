@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Optional
 
 import numpy as np
 
@@ -11,6 +11,12 @@ from lobster_common.third_party import transformations as trans
 
 
 class Quaternion:
+    """
+    Data class that stores quaternions. The quaternions should always be stored in the NED coordinate system
+    """
+
+    PRINTING_FORMAT_MINIMAL_WIDTH = -1
+    PRINTING_FORMAT_DECIMALS = -1
 
     def __init__(self, data: Union[List[float], Tuple[float, float, float, float], np.ndarray]):
         """
@@ -52,7 +58,24 @@ class Quaternion:
         return self._data[key]
 
     def __str__(self):
-        return f"Quaternion<x:{self.x} y:{self.y} z:{self.z} w:{self.w}>"
+        if Quaternion.PRINTING_FORMAT_DECIMALS != -1:
+            return f"Quaternion<" \
+                   f"x:{self.x:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}.{Quaternion.PRINTING_FORMAT_DECIMALS}f}, " \
+                   f"y:{self.y:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}.{Quaternion.PRINTING_FORMAT_DECIMALS}f}, " \
+                   f"z:{self.z:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}.{Quaternion.PRINTING_FORMAT_DECIMALS}f}, "\
+                   f"w:{self.w:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}.{Quaternion.PRINTING_FORMAT_DECIMALS}f}>"
+        elif Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH != -1:
+            return f"Quaternion<" \
+                   f"x:{self.x:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}f}, " \
+                   f"y:{self.y:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}f}, " \
+                   f"z:{self.z:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}f}, " \
+                   f"w:{self.w:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}f}>"
+        else:
+            return f"Quaternion<" \
+                   f"x:{self.x}, " \
+                   f"y:{self.y}, " \
+                   f"z:{self.z}, " \
+                   f"w:{self.w}>"
 
     def __repr__(self):
         return str(self)
@@ -60,10 +83,10 @@ class Quaternion:
     def __mul__(self, other):
         return Quaternion(trans.quaternion_multiply(self, other))
 
-    def __eq__(self, other):
+    def __eq__(self, other: 'Quaternion'):
         return np.equal(self.numpy(), other.numpy()).all()
 
-    def almost_equal(self, other: 'Quaternion'):
+    def almost_equal(self, other: 'Quaternion') -> bool:
         return np.allclose(self.numpy(), other.numpy())
 
     def get_rotation_matrix(self) -> np.ndarray:
@@ -85,7 +108,7 @@ class Quaternion:
              1 - 2 * (self.x ** 2 + self.y ** 2) / n]
         ])
 
-    def get_inverse_rotation_matrix(self):
+    def get_inverse_rotation_matrix(self) -> np.ndarray:
         return np.linalg.inv(self.get_rotation_matrix())
 
     @staticmethod
@@ -166,3 +189,10 @@ class Quaternion:
         """
         # Swapping X and Y and negating Z
         return Quaternion([quaternion[X], -quaternion[Y], -quaternion[Z], quaternion[W]])
+
+    @staticmethod
+    def set_printing_format(minimal_width: Optional[int] = None, decimals: Optional[int] = None):
+        if minimal_width is not None:
+            Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH = minimal_width
+        if decimals is not None:
+            Quaternion.PRINTING_FORMAT_DECIMALS = decimals

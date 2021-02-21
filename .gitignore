@@ -6,3 +6,5 @@ lobster_common/__pycache__/
 test/__pycache__/
 
 venv/
+
+lobster_common/third_party/__pycache__/
