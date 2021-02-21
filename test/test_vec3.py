@@ -19,10 +19,13 @@ class Vec3Test(unittest.TestCase):
             rotation = quaternion.Quaternion.from_euler(vec3.Vec3(np.random.rand(3) * 4 * math.pi - 2 * math.pi))
 
             numpy_method = vec3.Vec3(rotation.get_rotation_matrix().dot(vec.numpy()))
-
             rotate_method = vec.rotate(rotation)
 
-            self.assertEqual(numpy_method, rotate_method)
+            numpy_method_inv = vec3.Vec3(rotation.get_inverse_rotation_matrix().dot(vec.numpy()))
+            rotate_method_inv = vec.rotate_inverse(rotation)
+
+            self.assertTrue(np.allclose(numpy_method.numpy(), rotate_method.numpy()))
+            self.assertTrue(np.allclose(numpy_method_inv.numpy(), rotate_method_inv.numpy()))
 
     def test_cross_product(self):
         a = vec3.Vec3([1, 2, 3])

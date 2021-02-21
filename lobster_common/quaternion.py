@@ -28,15 +28,19 @@ class Quaternion:
         if isinstance(data, Quaternion):
             data = data.numpy().copy()
 
-        numpy_data: np.ndarray = np.asarray(data)
+        self._data: np.ndarray = np.asarray(data)
 
-        if numpy_data.shape[0] != 4:
+        if self._data.shape[0] != 4:
             raise InputDimensionError("A Quaternion needs an input array of length 4")
-
-        self._data: np.ndarray = numpy_data / np.linalg.norm(numpy_data)
 
     def numpy(self) -> np.ndarray:
         return self._data
+
+    def normalized(self):
+        return Quaternion(self.numpy() / self.magnitude())
+
+    def magnitude(self):
+        return np.linalg.norm(self._data)
 
     @property
     def x(self) -> float:
@@ -95,7 +99,6 @@ class Quaternion:
         :return: 3x3 rotation matrix.
         """
         n = np.linalg.norm(self.numpy())
-
         if n == 0.0:
             raise ZeroDivisionError(f"Input to `as_rotation_matrix({self})` has zero norm")
 
