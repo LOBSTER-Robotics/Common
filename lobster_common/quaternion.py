@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Optional
 
 import numpy as np
 
@@ -11,6 +11,12 @@ from lobster_common.third_party import transformations as trans
 
 
 class Quaternion:
+    """
+    Data class that stores quaternions. The quaternions should always be stored in the NED coordinate system
+    """
+
+    PRINTING_FORMAT_MINIMAL_WIDTH = -1
+    PRINTING_FORMAT_DECIMALS = -1
 
     def __init__(self, data: Union[List[float], Tuple[float, float, float, float], np.ndarray]):
         """
@@ -22,10 +28,12 @@ class Quaternion:
         if isinstance(data, Quaternion):
             data = data.numpy().copy()
 
-        self._data: np.ndarray = np.asarray(data)
+        numpy_data: np.ndarray = np.asarray(data)
 
-        if self._data.shape[0] != 4:
+        if numpy_data.shape[0] != 4:
             raise InputDimensionError("A Quaternion needs an input array of length 4")
+
+        self._data: np.ndarray = numpy_data / np.linalg.norm(numpy_data)
 
     def numpy(self) -> np.ndarray:
         return self._data
@@ -50,13 +58,36 @@ class Quaternion:
         return self._data[key]
 
     def __str__(self):
-        return f"Quaternion<x:{self.x},y:{self.y},z:{self.z},w:{self.w}"
+        if Quaternion.PRINTING_FORMAT_DECIMALS != -1:
+            return f"Quaternion<" \
+                   f"x:{self.x:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}.{Quaternion.PRINTING_FORMAT_DECIMALS}f}, " \
+                   f"y:{self.y:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}.{Quaternion.PRINTING_FORMAT_DECIMALS}f}, " \
+                   f"z:{self.z:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}.{Quaternion.PRINTING_FORMAT_DECIMALS}f}, "\
+                   f"w:{self.w:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}.{Quaternion.PRINTING_FORMAT_DECIMALS}f}>"
+        elif Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH != -1:
+            return f"Quaternion<" \
+                   f"x:{self.x:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}f}, " \
+                   f"y:{self.y:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}f}, " \
+                   f"z:{self.z:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}f}, " \
+                   f"w:{self.w:{Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH}f}>"
+        else:
+            return f"Quaternion<" \
+                   f"x:{self.x}, " \
+                   f"y:{self.y}, " \
+                   f"z:{self.z}, " \
+                   f"w:{self.w}>"
 
     def __repr__(self):
         return str(self)
 
     def __mul__(self, other):
         return Quaternion(trans.quaternion_multiply(self, other))
+
+    def __eq__(self, other: 'Quaternion'):
+        return np.equal(self.numpy(), other.numpy()).all()
+
+    def almost_equal(self, other: 'Quaternion') -> bool:
+        return np.allclose(self.numpy(), other.numpy())
 
     def get_rotation_matrix(self) -> np.ndarray:
         """
@@ -77,8 +108,20 @@ class Quaternion:
              1 - 2 * (self.x ** 2 + self.y ** 2) / n]
         ])
 
-    def get_inverse_rotation_matrix(self):
+    def get_inverse_rotation_matrix(self) -> np.ndarray:
         return np.linalg.inv(self.get_rotation_matrix())
+
+    @staticmethod
+    def from_rotation_matrix(matrix: np.ndarray) -> Quaternion:
+        if matrix.shape != (3, 3):
+            raise ValueError(f"Rotation matrix has to by 3x3 not {matrix.shape}")
+
+        # Add extra column and row to satisfy conditions for transformation
+        larger_matrix = np.zeros((4, 4))
+        larger_matrix[:-1, :-1] = matrix
+        larger_matrix[3, 3] = 1
+
+        return Quaternion(trans.quaternion_from_matrix(larger_matrix))
 
     def to_euler(self) -> vec3.Vec3:
         """
@@ -129,18 +172,27 @@ class Quaternion:
         # return trans.quaternion_multiply(trans.quaternion_conjugate(self), goal_quat)
         return self.conjugate() * other
 
-    def asENU(self) -> np.ndarray:
-        # Conversion follows https://stackoverflow.com/a/18818267
-        # Swapping X and Y and negating Z
-        return np.array([self._data[Y], self._data[X], -self._data[Z], self._data[W]])
+    def as_nwu(self) -> np.ndarray:
+        """
+        Transforms the quaternion to the NWU coordinate system.
+        :return: Quaternion as numpy array in the NWU coordinate system.
+        """
+        # Negating Y and Z
+        return np.array([self._data[X], -self._data[Y], -self._data[Z], self._data[W]])
 
     @staticmethod
-    def fromENU(quaternion: Union[List[float], Tuple[float, float, float, float], np.ndarray]) -> 'Quaternion':
+    def from_nwu(quaternion: Union[List[float], Tuple[float, float, float, float], np.ndarray]) -> 'Quaternion':
         """
-        Creates a quaternion in the NED coordinate system from a given array or Quaternion in the ENU coordinate system
+        Creates a quaternion in the NED coordinate system from a given array or Quaternion in the NWU coordinate system
         :param quaternion: Quaternion or array that represents a quaternion
         :return: Quaternion in the NED coordinate system
         """
-        # Conversion follows https://stackoverflow.com/a/18818267
         # Swapping X and Y and negating Z
-        return Quaternion([quaternion[Y], quaternion[X], -quaternion[Z], quaternion[W]])
+        return Quaternion([quaternion[X], -quaternion[Y], -quaternion[Z], quaternion[W]])
+
+    @staticmethod
+    def set_printing_format(minimal_width: Optional[int] = None, decimals: Optional[int] = None):
+        if minimal_width is not None:
+            Quaternion.PRINTING_FORMAT_MINIMAL_WIDTH = minimal_width
+        if decimals is not None:
+            Quaternion.PRINTING_FORMAT_DECIMALS = decimals

@@ -18,4 +18,4 @@ DENSITY_FRESHWATER = 997
 DENSITY_SALTWATER = 1029
 
 # Magnetic field direction based on NED frame
-MAGNETIC_FIELD = (1, 0, 0)
+MAGNETIC_FIELD = [1, 0, 0]

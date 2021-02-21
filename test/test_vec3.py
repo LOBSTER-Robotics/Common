@@ -26,3 +26,32 @@ class Vec3Test(unittest.TestCase):
 
             self.assertTrue(np.allclose(numpy_method.numpy(), rotate_method.numpy()))
             self.assertTrue(np.allclose(numpy_method_inv.numpy(), rotate_method_inv.numpy()))
+
+    def test_cross_product(self):
+        a = vec3.Vec3([1, 2, 3])
+        b = vec3.Vec3([4, 5, 6])
+
+        self.assertEquals(a.cross_product(b), vec3.Vec3([-3,  6, -3]))
+
+    def test_magnitude(self):
+        np.random.seed(0)
+
+        for _ in range(100):
+            vector = vec3.Vec3(np.random.rand(3))
+
+            self.assertAlmostEquals(vector.magnitude(), math.sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2))
+
+    def test_normalized(self):
+        np.random.seed(0)
+
+        for _ in range(100):
+            vector = vec3.Vec3(np.random.rand(3))
+            copy_vector = vec3.Vec3(vector)
+
+            norm_vector = vector.normalized()
+
+            # Make sure the normalized vector has magnitude 1
+            self.assertAlmostEquals(norm_vector.magnitude(), 1)
+
+            # Make sure the original vector has not changed
+            self.assertEquals(vector, copy_vector)
