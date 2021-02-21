@@ -36,7 +36,7 @@ class Vec3Test(unittest.TestCase):
         for _ in range(100):
             vector = vec3.Vec3(np.random.rand(3))
 
-            self.assertEquals(vector.magnitude(), math.sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2))
+            self.assertAlmostEquals(vector.magnitude(), math.sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2))
 
     def test_normalized(self):
         np.random.seed(0)
