@@ -143,7 +143,7 @@ class Vec3:
 
         return False
 
-    def from_nwu(self) -> np.ndarray:
+    def as_nwu(self) -> np.ndarray:
         """
         Transforms the vector to the ENU coordinate system.
         :return: Vector in the ENU coordinate system.
