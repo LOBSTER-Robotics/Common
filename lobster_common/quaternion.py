@@ -129,18 +129,20 @@ class Quaternion:
         # return trans.quaternion_multiply(trans.quaternion_conjugate(self), goal_quat)
         return self.conjugate() * other
 
-    def asENU(self) -> np.ndarray:
-        # Conversion follows https://stackoverflow.com/a/18818267
-        # Swapping X and Y and negating Z
-        return np.array([self._data[Y], self._data[X], -self._data[Z], self._data[W]])
+    def as_nwu(self) -> np.ndarray:
+        """
+        Transforms the quaternion to the NWU coordinate system.
+        :return: Quaternion as numpy array in the NWU coordinate system.
+        """
+        # Negating Y and Z
+        return np.array([self._data[X], -self._data[Y], -self._data[Z], self._data[W]])
 
     @staticmethod
-    def fromENU(quaternion: Union[List[float], Tuple[float, float, float, float], np.ndarray]) -> 'Quaternion':
+    def from_nwu(quaternion: Union[List[float], Tuple[float, float, float, float], np.ndarray]) -> 'Quaternion':
         """
-        Creates a quaternion in the NED coordinate system from a given array or Quaternion in the ENU coordinate system
+        Creates a quaternion in the NED coordinate system from a given array or Quaternion in the NWU coordinate system
         :param quaternion: Quaternion or array that represents a quaternion
         :return: Quaternion in the NED coordinate system
         """
-        # Conversion follows https://stackoverflow.com/a/18818267
         # Swapping X and Y and negating Z
-        return Quaternion([quaternion[Y], quaternion[X], -quaternion[Z], quaternion[W]])
+        return Quaternion([quaternion[X], -quaternion[Y], -quaternion[Z], quaternion[W]])

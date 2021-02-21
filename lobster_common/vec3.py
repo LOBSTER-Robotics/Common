@@ -134,20 +134,21 @@ class Vec3:
 
         return False
 
-    def asENU(self) -> np.ndarray:
+    def from_nwu(self) -> np.ndarray:
         """
         Transforms the vector to the ENU coordinate system.
         :return: Vector in the ENU coordinate system.
         """
-        # Swapping X and Y and negating Z
-        return np.array([self._data[Y], self._data[X], -self._data[Z]])
+        # Negating Y and Z
+        return np.array([self._data[X], -self._data[Y], -self._data[Z]])
 
     @staticmethod
-    def fromENU(vector: Union['Vec3', List[float], Tuple[float, float, float], np.ndarray]) -> Vec3:
+    def from_nwu(vector: Union['Vec3', List[float], Tuple[float, float, float], np.ndarray]) -> Vec3:
         """
         Takes a vector in from the ENU coordinate system and converts it to the NED coordinate system.
         :param vector: Vector in the ENU coordinate system.
         :return: Vector in the NED coordinate system.
         """
-        # Swapping X and Y and negating Z
-        return Vec3([vector[Y], vector[X], -vector[Z]])
+        # Negating Y and Z
+        return Vec3([vector[X], -vector[Y], -vector[Z]])
+
