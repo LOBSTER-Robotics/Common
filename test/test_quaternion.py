@@ -34,7 +34,7 @@ class QuaternionTest(unittest.TestCase):
     def test_from_matrix(self):
         np.random.seed(0)
         for _ in range(100):
-            q = quaternion.Quaternion(np.random.rand(4))
+            q = quaternion.Quaternion(np.random.rand(4)).normalized()
 
             matrix = q.get_rotation_matrix()
 
@@ -55,7 +55,7 @@ class QuaternionTest(unittest.TestCase):
 
         for _ in range(100):
             q_np = np.random.rand(4)
-            q2_np = q_np * np.array([1 + 10e-5, 1 + 10e-5, 1 + 10e-5, 1 + 10e-5])
+            q2_np = q_np * np.array([1 + 10e-6, 1 + 10e-6, 1 + 10e-6, 1 + 10e-6])
 
             q1 = quaternion.Quaternion(q_np)
             q2 = quaternion.Quaternion(q2_np)
