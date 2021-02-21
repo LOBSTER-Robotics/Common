@@ -66,6 +66,15 @@ class Vec3:
         """
         return Vec3(quaternion.get_inverse_rotation_matrix().dot(self._data))
 
+    def cross_product(self, other: Vec3) -> Vec3:
+        return Vec3(np.cross(self.numpy(), other.numpy()))
+
+    def normalized(self):
+        return self / self.magnitude()
+
+    def magnitude(self):
+        return np.linalg.norm(self._data)
+
     def __add__(self, other):
         if isinstance(other, Vec3):
             return Vec3(self._data + other._data)

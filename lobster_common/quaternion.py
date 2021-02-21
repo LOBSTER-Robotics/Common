@@ -22,10 +22,12 @@ class Quaternion:
         if isinstance(data, Quaternion):
             data = data.numpy().copy()
 
-        self._data: np.ndarray = np.asarray(data)
+        numpy_data: np.ndarray = np.asarray(data)
 
-        if self._data.shape[0] != 4:
+        if numpy_data.shape[0] != 4:
             raise InputDimensionError("A Quaternion needs an input array of length 4")
+
+        self._data: np.ndarray = numpy_data / np.linalg.norm(numpy_data)
 
     def numpy(self) -> np.ndarray:
         return self._data
@@ -50,13 +52,19 @@ class Quaternion:
         return self._data[key]
 
     def __str__(self):
-        return f"Quaternion<x:{self.x},y:{self.y},z:{self.z},w:{self.w}"
+        return f"Quaternion<x:{self.x} y:{self.y} z:{self.z} w:{self.w}>"
 
     def __repr__(self):
         return str(self)
 
     def __mul__(self, other):
         return Quaternion(trans.quaternion_multiply(self, other))
+
+    def __eq__(self, other):
+        return np.equal(self.numpy(), other.numpy()).all()
+
+    def almost_equal(self, other: 'Quaternion'):
+        return np.allclose(self.numpy(), other.numpy())
 
     def get_rotation_matrix(self) -> np.ndarray:
         """
@@ -79,6 +87,18 @@ class Quaternion:
 
     def get_inverse_rotation_matrix(self):
         return np.linalg.inv(self.get_rotation_matrix())
+
+    @staticmethod
+    def from_rotation_matrix(matrix: np.ndarray) -> Quaternion:
+        if matrix.shape != (3, 3):
+            raise ValueError(f"Rotation matrix has to by 3x3 not {matrix.shape}")
+
+        # Add extra column and row to satisfy conditions for transformation
+        larger_matrix = np.zeros((4, 4))
+        larger_matrix[:-1, :-1] = matrix
+        larger_matrix[3, 3] = 1
+
+        return Quaternion(trans.quaternion_from_matrix(larger_matrix))
 
     def to_euler(self) -> vec3.Vec3:
         """
