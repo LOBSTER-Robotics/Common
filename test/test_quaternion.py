@@ -5,7 +5,7 @@ import numpy as np
 
 from lobster_common import vec3, quaternion
 from lobster_common.third_party import transformations
-from lobster_common.vec3 import Vec3
+import time
 
 
 class QuaternionTest(unittest.TestCase):
@@ -60,4 +60,37 @@ class QuaternionTest(unittest.TestCase):
             q1 = quaternion.Quaternion(q_np)
             q2 = quaternion.Quaternion(q2_np)
 
+            self.assertTrue(q1.almost_equal(q2))
+
+    def test_multiplication(self):
+
+        for _ in range(100):
+            q1 = quaternion.Quaternion.from_random()
+            q2 = quaternion.Quaternion.from_random()
+
+            mul1 = q1*q2
+            mul2 = quaternion.Quaternion(transformations.quaternion_multiply(q2, q1))
+
+            self.assertTrue(mul1.almost_equal(mul2))
+
+    def test_from_to_rot_matrix(self):
+        for _ in range(1000):
+            q0 = quaternion.Quaternion.from_random()
+            matrix = quaternion.Quaternion.get_rotation_matrix(q0)
+
+            q1 = quaternion.Quaternion.from_rotation_matrix(matrix)
+
+            larger_matrix = np.identity(4)
+            larger_matrix[:-1, :-1] = matrix
+
+            q2 = quaternion.Quaternion(transformations.quaternion_from_matrix(larger_matrix))
+
+            self.assertTrue(q1.almost_equal(q0))  # test get_rotation_matrix
+            self.assertTrue(q1.almost_equal(q2))  # test from_rotation_matrix
+
+    def test_conjugation(self):
+        for _ in range(100):
+            q0 = quaternion.Quaternion.from_random()
+            q1 = q0.conjugate()
+            q2 = quaternion.Quaternion(transformations.quaternion_conjugate(q0.numpy()))
             self.assertTrue(q1.almost_equal(q2))

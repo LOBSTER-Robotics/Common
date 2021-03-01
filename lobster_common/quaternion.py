@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List, Union, Tuple, Optional
 
 import numpy as np
+import math
 
 from lobster_common import vec3
 from lobster_common.constants import *
@@ -37,7 +38,7 @@ class Quaternion:
         return self._data
 
     def normalized(self):
-        return Quaternion(self.numpy() / self.magnitude())
+        return Quaternion(self._data / self.magnitude())
 
     def magnitude(self):
         return np.linalg.norm(self._data)
@@ -85,7 +86,12 @@ class Quaternion:
         return str(self)
 
     def __mul__(self, other):
-        return Quaternion(trans.quaternion_multiply(self, other))
+        x1, y1, z1, w1 = self._data
+        x2, y2, z2, w2 = other
+        return Quaternion([x2 * w1 + y2 * z1 - z2 * y1 + w2 * x1,
+                           -x2 * z1 + y2 * w1 + z2 * x1 + w2 * y1,
+                           x2 * y1 - y2 * x1 + z2 * w1 + w2 * z1,
+                           -x2 * x1 - y2 * y1 - z2 * z1 + w2 * w1])
 
     def __eq__(self, other: 'Quaternion'):
         return np.equal(self.numpy(), other.numpy()).all()
@@ -98,9 +104,9 @@ class Quaternion:
         Convert input quaternion to 3x3 rotation matrix
         :return: 3x3 rotation matrix.
         """
-        n = np.linalg.norm(self.numpy())
+        n = self.magnitude()
         if n == 0.0:
-            raise ZeroDivisionError(f"Input to `as_rotation_matrix({self})` has zero norm")
+            raise ZeroDivisionError(f"Input to `get_rotation_matrix({self})` has zero norm")
 
         return np.array([
             [1 - 2 * (self.y ** 2 + self.z ** 2) / n, 2 * (self.x * self.y - self.z * self.w) / n,
@@ -119,12 +125,22 @@ class Quaternion:
         if matrix.shape != (3, 3):
             raise ValueError(f"Rotation matrix has to by 3x3 not {matrix.shape}")
 
-        # Add extra column and row to satisfy conditions for transformation
-        larger_matrix = np.zeros((4, 4))
-        larger_matrix[:-1, :-1] = matrix
-        larger_matrix[3, 3] = 1
+        if matrix[2, 2] < 0:
+            if matrix[0, 0] > matrix[1, 1]:
+                t = 1 + matrix[0, 0] - matrix[1, 1] - matrix[2, 2]
+                q = Quaternion([t, matrix[0, 1] + matrix[1, 0], matrix[2, 0] + matrix[0, 2], matrix[2, 1] - matrix[1, 2]])
+            else:
+                t = 1 - matrix[0, 0] + matrix[1, 1] - matrix[2, 2]
+                q = Quaternion([matrix[0, 1] + matrix[1, 0], t, matrix[1, 2] + matrix[2, 1], matrix[0, 2] - matrix[2, 0]])
+        else:
+            if matrix[0, 0] < -matrix[1, 1]:
+                t = 1 - matrix[0, 0] - matrix[1, 1] + matrix[2, 2]
+                q = Quaternion([matrix[2, 0] + matrix[0, 2], matrix[1, 2] + matrix[2, 1], t, matrix[1, 0] - matrix[0, 1]])
+            else:
+                t = 1 + matrix[0, 0] + matrix[1, 1] + matrix[2, 2]
+                q = Quaternion([matrix[2, 1] - matrix[1, 2], matrix[0, 2] - matrix[2, 0], matrix[1, 0] - matrix[0, 1], t])
 
-        return Quaternion(trans.quaternion_from_matrix(larger_matrix))
+        return Quaternion(q._data * 0.5 / math.sqrt(t))
 
     def to_euler(self) -> vec3.Vec3:
         """
@@ -158,13 +174,13 @@ class Quaternion:
         R[Z] = cos(alpha / 2) * cos(beta / 2) * sin(gamma / 2) - sin(alpha / 2) * sin(beta / 2) * cos(gamma / 2)
         R[W] = cos(alpha / 2) * cos(beta / 2) * cos(gamma / 2) + sin(alpha / 2) * sin(beta / 2) * sin(gamma / 2)
 
-        return Quaternion(R / np.linalg.norm(R))
+        return Quaternion(R).normalized()
 
     def conjugate(self) -> 'Quaternion':
         """
         Conjugate quaternion.
         """
-        return Quaternion(trans.quaternion_conjugate(self))
+        return Quaternion([-self.x, -self.y, -self.z, self.w])
 
     def difference(self, other: 'Quaternion') -> Quaternion:
         """
@@ -182,6 +198,13 @@ class Quaternion:
         """
         # Negating Y and Z
         return np.array([self._data[X], -self._data[Y], -self._data[Z], self._data[W]])
+
+    @staticmethod
+    def from_random() -> 'Quaternion':
+        """
+        Added for testing purposes. It is important to normalize to get a valid quaternion.
+        """
+        return Quaternion(np.random.rand(4)).normalized()
 
     @staticmethod
     def from_nwu(quaternion: Union[List[float], Tuple[float, float, float, float], np.ndarray]) -> 'Quaternion':
